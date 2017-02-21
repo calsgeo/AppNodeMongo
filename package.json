@@ -1,0 +1,25 @@
+{
+  "name": "appnodemongo",
+  "version": "1.0.0",
+  "description": "Aplicacion de Node, MongoDB, Angular2, Typescript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/calsgeo/AppNodeMongo.git"
+  },
+  "keywords": [
+    "Node",
+    "MongoDB",
+    "Angular2",
+    "Typescript"
+  ],
+  "author": "Camilo Alexander Leon Sanchez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/calsgeo/AppNodeMongo/issues"
+  },
+  "homepage": "https://github.com/calsgeo/AppNodeMongo#readme"
+}
