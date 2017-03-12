@@ -14,7 +14,7 @@ export var createToken = function(user){
         role: user.role,
         image: user.image,
         iat: moment().unix(), // fecha de creacion -> tipo timestamp
-        exp: moment().add(30, 'seconds').unix() // fecha de vencimiento
+        exp: moment().add(30, 'minutes').unix() // fecha de vencimiento
     };
 
     return jwtSimple.encode(payload, secret);

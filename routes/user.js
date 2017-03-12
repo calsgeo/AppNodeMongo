@@ -1,12 +1,13 @@
 'use strict';
 var express = require("express");
-var user_1 = require("../controllers/user");
-var md_auth = require("../middlewares/authenticated");
+var UserController = require("../controllers/user");
+var authenticated_1 = require("../middlewares/authenticated");
 //var express = require('express');
 //var UserController = require('../controllers/user');
 var api = express.Router();
 exports.api = api;
-api.get('/probando-controlador', md_auth.ensureAuth, user_1.pruebas);
-api.post('/register', user_1.saveUser);
-api.post('/login', user_1.loginUser);
+api.get('/probando-controlador', authenticated_1.ensureAuth, UserController.pruebas);
+api.post('/register', UserController.saveUser);
+api.post('/login', UserController.loginUser);
+api.put('/userUpdate/:id', authenticated_1.ensureAuth, UserController.userUpdate);
 //# sourceMappingURL=user.js.map

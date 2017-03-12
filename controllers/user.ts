@@ -5,13 +5,13 @@ import {User} from '../models/user';
 import {createToken} from '../services/jwt';
 
 
-function pruebas(req, res) {
+export function pruebas(req, res) {
     res.status(200).send({
         message: "Probando una acción del controlador de usuarios del API rest con Node y Mongo"
     });
 }
 
-function saveUser(req, res) {
+export function saveUser(req, res) {
     var user = new User();
     var params = req.body;
     console.log(params);
@@ -49,13 +49,13 @@ function saveUser(req, res) {
     }
 }
 
-function loginUser(req, res) {
+export function loginUser(req, res) {
     var params = req.body;
 
     var email = params.email;
     var password = params.password;
 
-    User.findOne ({email: email.toLowerCase()}, (err, user) => {
+    User.findOne ({email:email.toLowerCase()}, (err,user) => {
         if(err){
             res.status(500).send({message: 'error en la petición'});
         }else{
@@ -85,8 +85,19 @@ function loginUser(req, res) {
     });
 }
 
-export {
-    pruebas,
-    saveUser,
-    loginUser
-};
+export function userUpdate(req, res){
+    var userId = req.params.id;
+    var update = req.body;
+
+    User.findByIdAndUpdate(userId, update, (err, userUpdate) => {
+        if(err){
+            res.status(500).send({message: 'Error al actualizar el usuario'});
+        }else {
+            if(!userUpdate){
+                res.status(404).send({message: "No se ha podido actualizar el usuario"});
+            }else {
+                res.status(200).send({user: update});
+            }
+        }
+    });
+}

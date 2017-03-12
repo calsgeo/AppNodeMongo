@@ -86,4 +86,22 @@ function loginUser(req, res) {
     });
 }
 exports.loginUser = loginUser;
+function userUpdate(req, res) {
+    var userId = req.params.id;
+    var update = req.body;
+    user_1.User.findByIdAndUpdate(userId, update, function (err, userUpdate) {
+        if (err) {
+            res.status(500).send({ message: 'Error al actualizar el usuario' });
+        }
+        else {
+            if (!userUpdate) {
+                res.status(404).send({ message: "No se ha podido actualizar el usuario" });
+            }
+            else {
+                res.status(200).send({ user: update });
+            }
+        }
+    });
+}
+exports.userUpdate = userUpdate;
 //# sourceMappingURL=user.js.map
