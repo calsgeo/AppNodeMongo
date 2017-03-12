@@ -4,6 +4,13 @@ import * as bcrypt from 'bcrypt-nodejs';
 import {User} from '../models/user';
 import {createToken} from '../services/jwt';
 
+
+function pruebas(req, res) {
+    res.status(200).send({
+        message: "Probando una acción del controlador de usuarios del API rest con Node y Mongo"
+    });
+}
+
 function saveUser(req, res) {
     var user = new User();
     var params = req.body;
@@ -79,6 +86,7 @@ function loginUser(req, res) {
 }
 
 export {
+    pruebas,
     saveUser,
     loginUser
 };

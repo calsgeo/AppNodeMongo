@@ -3,6 +3,12 @@
 var bcrypt = require("bcrypt-nodejs");
 var user_1 = require("../models/user");
 var jwt_1 = require("../services/jwt");
+function pruebas(req, res) {
+    res.status(200).send({
+        message: "Probando una acción del controlador de usuarios del API rest con Node y Mongo"
+    });
+}
+exports.pruebas = pruebas;
 function saveUser(req, res) {
     var user = new user_1.User();
     var params = req.body;
