@@ -1,7 +1,7 @@
 'use strict'
 
 import * as express from 'express';
-import {pruebas, saveUser, loginUser } from "../controllers/user";
+import {saveUser, loginUser } from "../controllers/user";
 
 //var express = require('express');
 //var UserController = require('../controllers/user');

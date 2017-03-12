@@ -2,6 +2,7 @@
 
 import * as bcrypt from 'bcrypt-nodejs';
 import {User} from '../models/user';
+import {createToken} from '../services/jwt';
 
 function saveUser(req, res) {
     var user = new User();
@@ -58,8 +59,12 @@ function loginUser(req, res) {
                 bcrypt.compare(password, user.password, (err, check) => {
                     if(check){
                         //Devolver los datos del usuario registrado
-                        if(params.gethash){
+                        if(params.getHash){
                             //devolver un token de jwt
+                            //res.status(200).send({message: "El usuario está OK"});
+                            res.status(200).send({
+                                token: createToken(user)
+                            })
                         }else{
                             console.log("retorna los datos del usuario");
                             res.status(200).send({user});
