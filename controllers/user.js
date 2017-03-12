@@ -1,6 +1,6 @@
 'user strict';
 var bcrypt = require('bcrypt-nodejs');
-var User = require('../modes/user');
+var User = require('../models/user');
 function pruebas(req, res) {
     res.status(200).send({
         message: "Probando una acción del controlador de usuarios del API rest con Node y Mongo"
