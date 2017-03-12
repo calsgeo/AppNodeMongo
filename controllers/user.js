@@ -1,13 +1,9 @@
 'user strict';
-var bcrypt = require('bcrypt-nodejs');
-var User = require('../models/user');
-function pruebas(req, res) {
-    res.status(200).send({
-        message: "Probando una acción del controlador de usuarios del API rest con Node y Mongo"
-    });
-}
+"use strict";
+var bcrypt = require("bcrypt-nodejs");
+var user_1 = require("../models/user");
 function saveUser(req, res) {
-    var user = new User();
+    var user = new user_1.User();
     var params = req.body;
     console.log(params);
     user.name = params.name;
@@ -44,8 +40,38 @@ function saveUser(req, res) {
         res.status(200).send({ message: 'introduce la contraseña' });
     }
 }
-module.exports = {
-    pruebas: pruebas,
-    saveUser: saveUser
-};
+exports.saveUser = saveUser;
+function loginUser(req, res) {
+    var params = req.body;
+    var email = params.email;
+    var password = params.password;
+    user_1.User.findOne({ email: email.toLowerCase() }, function (err, user) {
+        if (err) {
+            res.status(500).send({ message: 'error en la petición' });
+        }
+        else {
+            if (!user) {
+                res.status(404).send({ message: 'usuario no existe' });
+            }
+            else {
+                // Validación contraseña
+                bcrypt.compare(password, user.password, function (err, check) {
+                    if (check) {
+                        //Devolver los datos del usuario registrado
+                        if (params.gethash) {
+                        }
+                        else {
+                            console.log("retorna los datos del usuario");
+                            res.status(200).send({ user: user });
+                        }
+                    }
+                    else {
+                        res.status(404).send({ message: 'el usuario no ha podido ingresar' });
+                    }
+                });
+            }
+        }
+    });
+}
+exports.loginUser = loginUser;
 //# sourceMappingURL=user.js.map

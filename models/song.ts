@@ -1,6 +1,10 @@
 'use strict'
 
-var mongoose = require('mongoose');
+import * as mongoose from 'mongoose';
+mongoose.Promise = require('bluebird');
+
+//var mongoose = require('mongoose');
+
 var Schema = mongoose.Schema;
 
 var SongSchema = Schema({
@@ -8,7 +12,10 @@ var SongSchema = Schema({
     name: String,
     duration: String,
     file: String,
-    album: {type: Schema.ObjectId, ref: 'Album'}
+    album: {
+        type: Schema.ObjectId,
+        ref: 'Album'
+    }
 });
 
 module.exports = mongoose.model('Song',SongSchema);

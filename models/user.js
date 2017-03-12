@@ -1,5 +1,6 @@
 'use strict';
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
+mongoose.Promise = require('bluebird');
 var Schema = mongoose.Schema;
 var UserSchema = Schema({
     name: String,
@@ -9,5 +10,6 @@ var UserSchema = Schema({
     role: String,
     image: String
 });
-module.exports = mongoose.model('User', UserSchema);
+var User = mongoose.model('User', UserSchema);
+exports.User = User;
 //# sourceMappingURL=user.js.map

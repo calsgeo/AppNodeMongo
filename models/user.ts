@@ -1,6 +1,8 @@
 'use strict'
 
-var mongoose = require('mongoose');
+import * as mongoose from 'mongoose';
+mongoose.Promise = require('bluebird');
+
 var Schema = mongoose.Schema;
 
 var UserSchema = Schema({
@@ -12,4 +14,5 @@ var UserSchema = Schema({
     image: String
 });
 
-module.exports = mongoose.model('User',UserSchema);
+var User = mongoose.model('User', UserSchema);
+export {User};

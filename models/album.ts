@@ -1,6 +1,9 @@
 'use strict'
 
-var mongoose = require('mongoose');
+import * as mongoose from 'mongoose';
+mongoose.Promise = require('bluebird');
+
+//var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var AlbumSchema = Schema({

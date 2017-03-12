@@ -1,15 +1,9 @@
 'user strict'
 
-var bcrypt = require('bcrypt-nodejs');
-var User = require('../models/user');
+import * as bcrypt from 'bcrypt-nodejs';
+import {User} from '../models/user';
 
-function pruebas(req, res){
-    res.status(200).send({
-        message: "Probando una acción del controlador de usuarios del API rest con Node y Mongo"
-    })
-}
-
-function saveUser(req, res){
+function saveUser(req, res) {
     var user = new User();
     var params = req.body;
     console.log(params);
@@ -46,7 +40,40 @@ function saveUser(req, res){
         res.status(200).send({message: 'introduce la contraseña'});
     }
 }
-module.exports = {
-    pruebas,
-    saveUser
+
+function loginUser(req, res) {
+    var params = req.body;
+
+    var email = params.email;
+    var password = params.password;
+
+    User.findOne ({email: email.toLowerCase()}, (err, user) => {
+        if(err){
+            res.status(500).send({message: 'error en la petición'});
+        }else{
+            if(!user){
+                res.status(404).send({message: 'usuario no existe'});
+            }else{
+                // Validación contraseña
+                bcrypt.compare(password, user.password, (err, check) => {
+                    if(check){
+                        //Devolver los datos del usuario registrado
+                        if(params.gethash){
+                            //devolver un token de jwt
+                        }else{
+                            console.log("retorna los datos del usuario");
+                            res.status(200).send({user});
+                        }
+                    }else{
+                        res.status(404).send({message: 'el usuario no ha podido ingresar'});
+                    }
+                });
+            }
+        }
+    });
+}
+
+export {
+    saveUser,
+    loginUser
 };

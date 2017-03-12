@@ -1,12 +1,13 @@
 'use strict'
 
-var express = require('express');
-var bodyParser = require('body-parser');
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+
 var app = express();
 
 //  cargar rutas
 
-var user_routes = require('./routes/user');
+import {api as user_routes} from './routes/user';
 
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
@@ -19,4 +20,4 @@ app. use('/api', user_routes);
 
 
 
-module.exports = app;
+export {app};
