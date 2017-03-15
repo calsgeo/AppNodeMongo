@@ -1,7 +1,6 @@
 'use strict';
 var mongoose = require("mongoose");
 mongoose.Promise = require('bluebird');
-//var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var SongSchema = Schema({
     number: Number,
@@ -13,5 +12,6 @@ var SongSchema = Schema({
         ref: 'Album'
     }
 });
-module.exports = mongoose.model('Song', SongSchema);
+var Song = mongoose.model('Song', SongSchema);
+exports.Song = Song;
 //# sourceMappingURL=song.js.map

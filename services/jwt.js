@@ -1,7 +1,7 @@
 'use strict';
 var jwtSimple = require("jwt-simple");
 var moment = require("moment");
-var secret = 'MiCLaveSecreta';
+var secret = 'MiClaveSecreta';
 /**
  * Recupera los datos del usuario y los encripta, Crea el token y le asigna su vigencia
  *

@@ -17,7 +17,7 @@ import * as path from 'path';
  * @param {any} res Respuesta generada por el servicio
  */
 export function getToken(req, res) {
-    console.log(req);
+    //console.log(req);
     var params = req.body;
     res.status(200).send({
         message: "Ingreso al Token"
@@ -36,7 +36,7 @@ export function saveUser(req, res) {
     var user = new User();
     // asigna los parametros enviados por register al schema
     var params = req.body;
-    console.log(params);
+    //console.log(params);
 
     user.name = params.name;
     user.surname = params.surname;

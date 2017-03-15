@@ -3,7 +3,7 @@
 import * as jwtSimple from 'jwt-simple';
 import * as moment from 'moment';
 
-var secret = 'MiCLaveSecreta';
+var secret = 'MiClaveSecreta';
 
 /**
  * Recupera los datos del usuario y los encripta, Crea el token y le asigna su vigencia

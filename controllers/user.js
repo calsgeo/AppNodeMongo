@@ -13,7 +13,7 @@ var path = require("path");
  * @param {any} res Respuesta generada por el servicio
  */
 function getToken(req, res) {
-    console.log(req);
+    //console.log(req);
     var params = req.body;
     res.status(200).send({
         message: "Ingreso al Token"
@@ -32,7 +32,7 @@ function saveUser(req, res) {
     var user = new user_1.User();
     // asigna los parametros enviados por register al schema
     var params = req.body;
-    console.log(params);
+    //console.log(params);
     user.name = params.name;
     user.surname = params.surname;
     user.email = params.email;

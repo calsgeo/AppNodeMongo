@@ -9,5 +9,6 @@ var AlbumSchema = Schema({
     image: String,
     artist: { type: Schema.ObjectId, ref: 'Artist' }
 });
-module.exports = mongoose.model('Album', AlbumSchema);
+var Album = mongoose.model('Album', AlbumSchema);
+exports.Album = Album;
 //# sourceMappingURL=album.js.map

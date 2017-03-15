@@ -3,8 +3,6 @@
 import * as mongoose from 'mongoose';
 mongoose.Promise = require('bluebird');
 
-//var mongoose = require('mongoose');
-
 var Schema = mongoose.Schema;
 
 var SongSchema = Schema({
@@ -18,4 +16,5 @@ var SongSchema = Schema({
     }
 });
 
-module.exports = mongoose.model('Song',SongSchema);
+var Song = mongoose.model('Song',SongSchema);
+export {Song};

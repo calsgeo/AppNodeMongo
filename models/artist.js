@@ -8,5 +8,6 @@ var ArtistSchema = Schema({
     description: String,
     image: String
 });
-module.exports = mongoose.model('Artist', ArtistSchema);
+var Artist = mongoose.model('Artist', ArtistSchema);
+exports.Artist = Artist;
 //# sourceMappingURL=artist.js.map
