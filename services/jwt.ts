@@ -3,9 +3,16 @@
 import * as jwtSimple from 'jwt-simple';
 import * as moment from 'moment';
 
-var secret = 'clave_secreta_curso';
+var secret = 'MiCLaveSecreta';
 
-export var createToken = function(user){
+/**
+ * Recupera los datos del usuario y los encripta, Crea el token y le asigna su vigencia
+ * 
+ * @export
+ * @param {any} user 
+ * @returns 
+ */
+export function createToken(user){
     var payload = {
         sub: user._id,
         name: user.name,

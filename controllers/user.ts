@@ -7,14 +7,34 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 
-export function pruebas(req, res) {
+
+
+/**
+ * Valida el token enviado por /getToken
+ * 
+ * @export
+ * @param {any} req Parametros enviados por el cliente a traves de la API
+ * @param {any} res Respuesta generada por el servicio
+ */
+export function getToken(req, res) {
+    console.log(req);
+    var params = req.body;
     res.status(200).send({
-        message: "Probando una acción del controlador de usuarios del API rest con Node y Mongo"
+        message: "Ingreso al Token"
     });
 }
 
+/**
+ * Registra el usuario en la base de datos
+ *  
+ * @export
+ * @param {any} req Parametros enviados por el cliente a traves de la API
+ * @param {any} res Respuesta generada por el servicio
+ */
 export function saveUser(req, res) {
+    // Consume el schema de usuario de la base de datoss
     var user = new User();
+    // asigna los parametros enviados por register al schema
     var params = req.body;
     console.log(params);
 
@@ -25,11 +45,16 @@ export function saveUser(req, res) {
     user.image = null;
 
     if (params.password){
-        // Encriptar contraseña y guardar datos
+        /*
+            * Encripta la contraseña y guardar datos, en el caso que no funcione la linea bcrypt.hash(params.password,null,null, function(err, hash){ es necesario activar la linea "let salt... " y la linea bcrypt con parametros no nulos
+            * La variable salt contiene la base de la encriptacion, en ese caso seran 10 caracteres.
+        */
+        //let salt = bcrypt.genSaltSync(10);
         bcrypt.hash(params.password,null,null, function(err, hash){
+        // bcrypt.hash(params.password,salt,function () {}, function(err, hash){
             user.password = hash;
             if(user.name != null && user.surname != null && user.email != null){
-                // Guardar el usuario
+                // Almacena el usuario en la BD
                 user.save((err,userStored) =>{
                     if(err){
                         res.status(500).send({mesage: 'Error al guardar al usuario'});
@@ -51,11 +76,20 @@ export function saveUser(req, res) {
     }
 }
 
+/**
+ * 
+ * Valida los datos enviados (email y contraseña) contra los datos almacenados en la BD y retorna los datos del usuario (contraseña encriptada)
+ * @export
+ * @param {any} req Parametros enviados por el cliente a traves de la API
+ * @param {any} res Respuesta generada por el servicio
+ */
 export function loginUser(req, res) {
     var params = req.body;
 
     var email = params.email;
     var password = params.password;
+
+    // Busca un registro en la base de datos a partir del correo electronico
 
     User.findOne ({email:email.toLowerCase()}, (err,user) => {
         if(err){
@@ -64,13 +98,12 @@ export function loginUser(req, res) {
             if(!user){
                 res.status(404).send({message: 'usuario no existe'});
             }else{
-                // Validación contraseña
+                // Despues de validar la existencia del correo electronico valida su contraseña
                 bcrypt.compare(password, user.password, (err, check) => {
                     if(check){
-                        //Devolver los datos del usuario registrado
+                        //Retorna los datos del usuario registrado
                         if(params.getHash){
                             //devolver un token de jwt
-                            //res.status(200).send({message: "El usuario está OK"});
                             res.status(200).send({
                                 token: createToken(user)
                             })
@@ -87,10 +120,18 @@ export function loginUser(req, res) {
     });
 }
 
+/**
+ * Actualiza la información de un usuario existente en la base de datos, recibe todos los campos que el usuario ingrese
+ * 
+ * @export
+ * @param {any} req Parametros enviados por el cliente a traves de la API
+ * @param {any} res Respuesta generada por el servicio
+ */
 export function userUpdate(req, res){
     var userId = req.params.id;
     var update = req.body;
 
+    // Busca en la BD por el id recuperado al hacer el login 
     User.findByIdAndUpdate(userId, update, (err, userUpdate) => {
         if(err){
             res.status(500).send({message: 'Error al actualizar el usuario'});
@@ -104,10 +145,20 @@ export function userUpdate(req, res){
     });
 }
 
+
+/**
+ * Almacena un archivo de imagen a un usuario almacenado en la base de datos
+ * 
+ * @export
+ * @param {any} req Parametros enviados por el cliente a traves de la API
+ * @param {any} res Respuesta generada por el servicio
+ */
 export function uploadImage(req, res){
     var userId = req.params.id;
 
+    // En el momento en que el usuario haya seleccionado un archivo de imagen
     if(req.files){
+        // Extrae la ruta, el nombre del archivo y el formato
         let filePath = req.files.image.path;
         let filePathSplit = filePath.split('/');
         let fileName = filePathSplit[filePathSplit.length-1];
@@ -117,6 +168,7 @@ export function uploadImage(req, res){
         console.log(filePath);
         console.log(fileName);
         
+        // Valida que el formato del archivo sea valido y posteriormente actualiza el registro
         switch (fileExtension) {
             case 'jpg':
             case 'jpeg':
@@ -144,10 +196,18 @@ export function uploadImage(req, res){
     }
 }
 
+/**
+ * Retorna el avatar del usuario almacenado en la BD
+ * 
+ * @export
+ * @param {any} req Parametros enviados por el cliente a traves de la API
+ * @param {any} res Respuesta generada por el servicio
+ */
 export function getImageFile(req, res) {
     let imageFile = req.params.imageFile;
     let pathFile = './uploads/users/'+ imageFile;
 
+    // Busca y retorna el archivo de imagen almagenado para el usuario
     fs.exists(pathFile, function(exists){
         if(exists){
             res.sendFile(path.resolve(pathFile));

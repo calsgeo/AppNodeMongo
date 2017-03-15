@@ -1,8 +1,15 @@
 'use strict';
 var jwtSimple = require("jwt-simple");
 var moment = require("moment");
-var secret = 'clave_secreta_curso';
-exports.createToken = function (user) {
+var secret = 'MiCLaveSecreta';
+/**
+ * Recupera los datos del usuario y los encripta, Crea el token y le asigna su vigencia
+ *
+ * @export
+ * @param {any} user
+ * @returns
+ */
+function createToken(user) {
     var payload = {
         sub: user._id,
         name: user.name,
@@ -14,5 +21,7 @@ exports.createToken = function (user) {
         exp: moment().add(30, 'minutes').unix() // fecha de vencimiento
     };
     return jwtSimple.encode(payload, secret);
-};
+}
+exports.createToken = createToken;
+;
 //# sourceMappingURL=jwt.js.map
