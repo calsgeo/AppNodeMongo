@@ -3,6 +3,8 @@
 var bcrypt = require("bcrypt-nodejs");
 var user_1 = require("../models/user");
 var jwt_1 = require("../services/jwt");
+var fs = require("fs");
+var path = require("path");
 function pruebas(req, res) {
     res.status(200).send({
         message: "Probando una acción del controlador de usuarios del API rest con Node y Mongo"
@@ -104,4 +106,57 @@ function userUpdate(req, res) {
     });
 }
 exports.userUpdate = userUpdate;
+function uploadImage(req, res) {
+    var userId = req.params.id;
+    if (req.files) {
+        var filePath = req.files.image.path;
+        var filePathSplit = filePath.split('/');
+        var fileName = filePathSplit[filePathSplit.length - 1];
+        var fileNameSplit = fileName.split('.');
+        var fileExtension = fileNameSplit[fileNameSplit.length - 1].toLowerCase();
+        console.log(filePath);
+        console.log(fileName);
+        switch (fileExtension) {
+            case 'jpg':
+            case 'jpeg':
+            case 'jpg':
+            case 'png':
+            case 'gif':
+                console.log(fileExtension);
+                user_1.User.findByIdAndUpdate(userId, { image: fileName }, function (err, userUpdate) {
+                    if (!userUpdate) {
+                        res.status(404).send({ message: 'No se ha podido actualizar el usuario' });
+                    }
+                    else {
+                        if (!userUpdate) {
+                            res.status(404).send({ message: "No se ha podido actualizar el usuario" });
+                        }
+                        else {
+                            res.status(200).send({ user: userUpdate });
+                        }
+                    }
+                });
+                break;
+            default:
+                res.status(500).send({ message: 'Extensión de archivo no válida' });
+        }
+    }
+    else {
+        res.status(500).send({ message: '¡No ha cargado una imagen!' });
+    }
+}
+exports.uploadImage = uploadImage;
+function getImageFile(req, res) {
+    var imageFile = req.params.imageFile;
+    var pathFile = './uploads/users/' + imageFile;
+    fs.exists(pathFile, function (exists) {
+        if (exists) {
+            res.sendFile(path.resolve(pathFile));
+        }
+        else {
+            res.status(200).send({ message: '¡Imagen inexistente!' });
+        }
+    });
+}
+exports.getImageFile = getImageFile;
 //# sourceMappingURL=user.js.map

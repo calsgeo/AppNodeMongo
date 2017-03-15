@@ -3,6 +3,8 @@
 import * as bcrypt from 'bcrypt-nodejs';
 import {User} from '../models/user';
 import {createToken} from '../services/jwt';
+import * as fs from 'fs';
+import * as path from 'path';
 
 
 export function pruebas(req, res) {
@@ -98,6 +100,59 @@ export function userUpdate(req, res){
             }else {
                 res.status(200).send({user: update});
             }
+        }
+    });
+}
+
+export function uploadImage(req, res){
+    var userId = req.params.id;
+
+    if(req.files){
+        let filePath = req.files.image.path;
+        let filePathSplit = filePath.split('/');
+        let fileName = filePathSplit[filePathSplit.length-1];
+        let fileNameSplit = fileName.split('.');
+        let fileExtension = fileNameSplit[fileNameSplit.length-1].toLowerCase();
+
+        console.log(filePath);
+        console.log(fileName);
+        
+        switch (fileExtension) {
+            case 'jpg':
+            case 'jpeg':
+            case 'jpg':
+            case 'png':
+            case 'gif':
+                console.log(fileExtension);
+                User.findByIdAndUpdate(userId, {image: fileName}, (err, userUpdate) => {
+                    if(!userUpdate){
+                        res.status(404).send({message: 'No se ha podido actualizar el usuario'});
+                    }else {
+                        if(!userUpdate){
+                            res.status(404).send({message: "No se ha podido actualizar el usuario"});
+                        }else {
+                            res.status(200).send({user: userUpdate});
+                        }
+                    }
+                });
+                break;
+            default:
+                res.status(500).send({message: 'Extensión de archivo no válida'});
+        }
+    }else{
+        res.status(500).send({message: '¡No ha cargado una imagen!'});
+    }
+}
+
+export function getImageFile(req, res) {
+    let imageFile = req.params.imageFile;
+    let pathFile = './uploads/users/'+ imageFile;
+
+    fs.exists(pathFile, function(exists){
+        if(exists){
+            res.sendFile(path.resolve(pathFile));
+        }else{
+            res.status(200).send({message: '¡Imagen inexistente!'});
         }
     });
 }
