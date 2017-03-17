@@ -2,11 +2,68 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as mongoose from 'mongoose';
+import * as mongoosePaginate from 'mongoose-paginate';
 
 import {Artist} from '../models/artist';
 import {Album} from '../models/album';
 import {Song} from '../models/song';
 
+
+
+/**
+ * Trae un listado de artistas almacenados en la base de datos.
+ * 
+ * @export
+ * @param {any} req 
+ * @param {any} res 
+ */
+
+/*
+export function getAllArtist(req, res){
+    let page = req.params.page;
+    let itemsPerPage = 5;
+
+    // Funcion Paginate de mongoosePagination es la que se encarga de listar los artistas
+    Artist.find().sort('name').paginate(page, itemsPerPage, (err, artists, total) => {
+        if(err){
+            res.status(500).send({message: 'Error en la petición.'});
+        } else {
+            if (!artists){
+                res.status(404).send({message: '¡No hay artistas!'});
+            }else {
+                return res.status(200).send({
+                    TotalArtistas: total,
+                    artists: artists
+                });
+            }
+        }
+    });
+}
+*/
+
+export function getAllArtists(req, res){
+    let page = req.params.page || 1;
+    let itemsPerPage = req.params.itemspage || 5;
+
+    let query = {};
+    let options = {
+        sort: { name: 1},
+        page: parseInt(page),
+        limit: parseInt(itemsPerPage)
+    };
+    Artist.paginate(query, options, function(err, result){
+        if (err) {
+            res.status(500).send({message: 'Error al realizar la petición'});
+        } else {
+            if (!Artist){
+                res.status(404).send({message: '¡No hay artistas!'});
+            } else {
+                res.status(200).send({artists: result.docs});
+            }
+        }
+    });
+}
 
 /**
  * Retorna la información del artista enviado en la solicitud

@@ -1,9 +1,10 @@
 'use strict'
 
 import * as mongoose from 'mongoose';
+import * as mongoosePaginate from 'mongoose-paginate';
 mongoose.Promise = require('bluebird');
 
-//var mongoose = require('mongoose');
+
 var Schema = mongoose.Schema;
 
 var ArtistSchema = Schema({
@@ -12,5 +13,7 @@ var ArtistSchema = Schema({
     image: String
 });
 
-var Artist = mongoose.model('Artist',ArtistSchema);
+ArtistSchema.plugin(mongoosePaginate);
+
+var Artist = mongoose.model('Artist', ArtistSchema);
 export {Artist};

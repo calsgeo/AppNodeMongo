@@ -10,5 +10,7 @@ var api = express.Router();
 
 api.get('/artist/:id', md_auth, ArtistController.getArtist); // Es obligatorio incluir el id en la ruta
 api.post('/saveArtist', md_auth, ArtistController.saveArtist);
+api.get('/getAllArtist/:page?', md_auth, ArtistController.getAllArtists);
+
 
 export {api};
