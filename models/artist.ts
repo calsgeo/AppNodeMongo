@@ -2,12 +2,12 @@
 
 import * as mongoose from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate';
-mongoose.Promise = require('bluebird');
+//mongoose.Promise = require('bluebird');
 
 
 var Schema = mongoose.Schema;
 
-var ArtistSchema = Schema({
+var ArtistSchema = new Schema({
     name: String,
     description: String,
     image: String

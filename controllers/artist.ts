@@ -11,41 +11,20 @@ import {Song} from '../models/song';
 
 
 
+
 /**
- * Trae un listado de artistas almacenados en la base de datos.
+ * Retorna el listado de artistas usando el paginate de mongooseº
  * 
  * @export
- * @param {any} req 
- * @param {any} res 
+ * @param {any} req Parametros enviados por el cliente a traves de la API  
+ * @param {any} res Respuesta generada por el servicio  
  */
-
-/*
-export function getAllArtist(req, res){
-    let page = req.params.page;
-    let itemsPerPage = 5;
-
-    // Funcion Paginate de mongoosePagination es la que se encarga de listar los artistas
-    Artist.find().sort('name').paginate(page, itemsPerPage, (err, artists, total) => {
-        if(err){
-            res.status(500).send({message: 'Error en la petición.'});
-        } else {
-            if (!artists){
-                res.status(404).send({message: '¡No hay artistas!'});
-            }else {
-                return res.status(200).send({
-                    TotalArtistas: total,
-                    artists: artists
-                });
-            }
-        }
-    });
-}
-*/
 
 export function getAllArtists(req, res){
     let page = req.params.page || 1;
     let itemsPerPage = req.params.itemspage || 5;
 
+    // Define la consulta basica que sera empleada dentro de la funcion paginate.
     let query = {};
     let options = {
         sort: { name: 1},
