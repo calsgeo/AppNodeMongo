@@ -1,17 +1,11 @@
 'user strict'
 
 import * as bcrypt from 'bcrypt-nodejs';
-import {
-    User
-} from '../models/user';
-import {
-    createToken
-} from '../services/jwt';
+
 import * as fs from 'fs';
 import * as path from 'path';
-
-
-
+import {UserModel as User} from '../models/user';
+import {createToken} from '../services/jwt';
 
 /**
  * Valida el token enviado por /getToken
@@ -20,12 +14,39 @@ import * as path from 'path';
  * @param {any} req Parametros enviados por el cliente a traves de la API
  * @param {any} res Respuesta generada por el servicio
  */
-export function getToken(req, res) {
+export function validateToken(req, res) {
     //console.log(req);
     var params = req.body;
     res.status(200).send({
-        message: "Ingreso al Token"
+        message: "Token Valido"
     });
+}
+
+function validateImage(image):string{
+    if(typeof image === 'undefined'){
+        return 'null';
+    } else {
+        // Valida que el formato del archivo sea valido y posteriormente actualiza el registro
+        switch (image.mimetype) {
+            case 'image/jpeg':
+            case 'image/png':
+            case 'image/gif':
+                return image.filename;
+            default:
+                fs.stat(image.path, (err, exist) => {
+                    if(exist){
+                        fs.unlink(image.path,(err) => {
+                            if(err){
+                                console.log(err);
+                            }
+                        });
+                    } else {
+                        console.log(err);
+                    }
+                });
+                return 'undefined';
+        }
+    }
 }
 
 /**
@@ -44,9 +65,14 @@ export function saveUser(req, res) {
 
     user.name = params.name;
     user.surname = params.surname;
-    user.email = params.email;
+    user.email = params.email.toLowerCase();
     user.role = 'ROLE_USER';
-    user.image = null;
+    user.image = validateImage(req.file);
+
+    if(user.image == 'undefined'){
+        res.status(500).send({message: 'Error de procesamiento. Formato de imagen no válido'});
+        return;
+    }
 
     if (params.password) {
         /*
@@ -119,7 +145,7 @@ export function loginUser(req, res) {
                 });
             } else {
                 // Despues de validar la existencia del correo electronico valida su contraseña
-                bcrypt.compare(password, user.password, (err, check) => {
+                bcrypt.compare(password, user.password.toString(), (err, check) => {
                     if (check) {
                         //Retorna los datos del usuario registrado
                         if (params.getHash) {
@@ -175,69 +201,6 @@ export function userUpdate(req, res) {
     });
 }
 
-
-/**
- * Almacena un archivo de imagen a un usuario almacenado en la base de datos
- * 
- * @export
- * @param {any} req Parametros enviados por el cliente a traves de la API
- * @param {any} res Respuesta generada por el servicio
- */
-export function uploadImage(req, res) {
-    var userId = req.params.id;
-
-    // En el momento en que el usuario haya seleccionado un archivo de imagen
-    if (req.files) {
-        // Extrae la ruta, el nombre del archivo y el formato
-        let filePath = req.files.image.path;
-        let filePathSplit = filePath.split('/');
-        let fileName = filePathSplit[filePathSplit.length - 1];
-        let fileNameSplit = fileName.split('.');
-        let fileExtension = fileNameSplit[fileNameSplit.length - 1].toLowerCase();
-
-        console.log(filePath);
-        console.log(fileName);
-
-        // Valida que el formato del archivo sea valido y posteriormente actualiza el registro
-        switch (fileExtension) {
-            case 'jpg':
-            case 'jpeg':
-            case 'jpg':
-            case 'png':
-            case 'gif':
-                console.log(fileExtension);
-                User.findByIdAndUpdate(userId, {
-                    image: fileName
-                }, (err, userUpdate) => {
-                    if (!userUpdate) {
-                        res.status(404).send({
-                            message: 'No se ha podido actualizar el usuario'
-                        });
-                    } else {
-                        if (!userUpdate) {
-                            res.status(404).send({
-                                message: "No se ha podido actualizar el usuario"
-                            });
-                        } else {
-                            res.status(200).send({
-                                user: userUpdate
-                            });
-                        }
-                    }
-                });
-                break;
-            default:
-                res.status(500).send({
-                    message: 'Extensión de archivo no válida'
-                });
-        }
-    } else {
-        res.status(500).send({
-            message: '¡No ha cargado una imagen!'
-        });
-    }
-}
-
 /**
  * Retorna el avatar del usuario almacenado en la BD
  * 
@@ -250,13 +213,11 @@ export function getImageFile(req, res) {
     let pathFile = './uploads/users/' + imageFile;
 
     // Busca y retorna el archivo de imagen almagenado para el usuario
-    fs.exists(pathFile, function (exists) {
+    fs.stat(pathFile, (err, exists) => {
         if (exists) {
             res.sendFile(path.resolve(pathFile));
         } else {
-            res.status(200).send({
-                message: '¡Imagen inexistente!'
-            });
+            res.status(404).send({message: '¡Imagen inexistente!'});
         }
     });
 }

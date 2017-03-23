@@ -2,47 +2,13 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as mongoose from 'mongoose';
+import {PaginateModel, Schema, model} from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate';
 
-import {Artist} from '../models/artist';
-import {Album} from '../models/album';
-import {Song} from '../models/song';
+import {ArtistModel as Artist} from '../models/artist';
+//import {AlbumModel as Album} from '../models/album';
+//import {SongModel as Song} from '../models/song';
 
-
-
-
-/**
- * Retorna el listado de artistas usando el paginate de mongooseº
- * 
- * @export
- * @param {any} req Parametros enviados por el cliente a traves de la API  
- * @param {any} res Respuesta generada por el servicio  
- */
-
-export function getAllArtists(req, res){
-    let page = req.params.page || 1;
-    let itemsPerPage = req.params.itemspage || 5;
-
-    // Define la consulta basica que sera empleada dentro de la funcion paginate.
-    let query = {};
-    let options = {
-        sort: { name: 1},
-        page: parseInt(page),
-        limit: parseInt(itemsPerPage)
-    };
-    Artist.paginate(query, options, function(err, result){
-        if (err) {
-            res.status(500).send({message: 'Error al realizar la petición'});
-        } else {
-            if (!Artist){
-                res.status(404).send({message: '¡No hay artistas!'});
-            } else {
-                res.status(200).send({artists: result.docs});
-            }
-        }
-    });
-}
 
 /**
  * Retorna la información del artista enviado en la solicitud
@@ -56,14 +22,20 @@ export function getArtist(req, res) {
     var artistId = req.params.id;
 
     // Busca al artista por su id, en el caso de no encontrarlo retorna un mensaje de error
-    Artist.findById(artistId,(err,artist) => {
+    Artist.findById(artistId, (err, artist) => {
         if (err) {
-            res.status(500).send({message: 'Error en la petición'});
+            res.status(500).send({
+                message: 'Error en la petición'
+            });
         } else {
             if (!artist) {
-                res.status(404).send({message: 'El artista no existe'});
+                res.status(404).send({
+                    message: 'El artista no existe'
+                });
             } else {
-                res.status(200).send({artist});
+                res.status(200).send({
+                    artist
+                });
             }
         }
     });
@@ -94,6 +66,39 @@ export function saveArtist(req, res){
                 res.status(200).send({artist: artistStored});
             }
 
+        }
+    });
+}
+
+
+/**
+ * Retorna el listado de artistas usando el paginate de mongooseº
+ * 
+ * @export
+ * @param {any} req Parametros enviados por el cliente a traves de la API  
+ * @param {any} res Respuesta generada por el servicio  
+ */
+
+export function getAllArtists(req, res){
+    let page = req.params.page || 1;
+    let itemsPerPage = req.params.itemspage || 5;
+
+    // Define la consulta basica que sera empleada dentro de la funcion paginate.
+    let query = {};
+    let options = {
+        sort: { name: 1},
+        page: parseInt(page),
+        limit: parseInt(itemsPerPage)
+    };
+    Artist.paginate(query, options, function(err, result){
+        if (err) {
+            res.status(500).send({message: 'Error al realizar la petición'});
+        } else {
+            if (!Artist){
+                res.status(404).send({message: '¡No hay artistas!'});
+            } else {
+                res.status(200).send({artists: result.docs});
+            }
         }
     });
 }

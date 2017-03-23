@@ -1,13 +1,10 @@
 'use strict'
 
-import * as mongoose from 'mongoose';
+import {PaginateModel, Document, Schema, model} from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate';
-//mongoose.Promise = require('bluebird');
+import {IArtist} from '../interfaces/artist';
 
-
-var Schema = mongoose.Schema;
-
-var ArtistSchema = new Schema({
+const ArtistSchema: Schema = new Schema({
     name: String,
     description: String,
     image: String
@@ -15,5 +12,6 @@ var ArtistSchema = new Schema({
 
 ArtistSchema.plugin(mongoosePaginate);
 
-var Artist = mongoose.model('Artist', ArtistSchema);
-export {Artist};
+interface ArtistModel<T extends Document> extends PaginateModel<T> {}
+
+export const ArtistModel: ArtistModel<IArtist> = model<IArtist>('Artist', ArtistSchema);

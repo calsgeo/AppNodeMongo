@@ -1,17 +1,17 @@
 'use strict'
 
-import * as mongoose from 'mongoose';
-mongoose.Promise = require('bluebird');
+import {Document, model, Model, Schema} from 'mongoose';
+import {IAlbum} from '../interfaces/album';
 
-//var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-
-var AlbumSchema = Schema({
+const AlbumSchema: Schema = new Schema ({
     title: String,
+    description: String,
     year: Number,
     image: String,
-    artist: {type: Schema.ObjectId, ref: 'Artist'}
+    artist: {
+        type: Schema.Types.ObjectId,
+        ref: 'Artist'
+    }
 });
 
-var Album = mongoose.model('Album',AlbumSchema);
-export {Album};
+export const AlbumModel: Model<IAlbum> = model<IAlbum> ('Album', AlbumSchema);
