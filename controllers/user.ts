@@ -22,6 +22,13 @@ export function validateToken(req, res) {
     });
 }
 
+
+/**
+ * Valida que el formato de archivo de imagen sea válido. En el caso que no sea así, elimina el archivo almacenado por multer.
+ * 
+ * @param {any} image recibe el req.file del requerimiento del usuario
+ * @returns {string} retorna un string según el resultado de la validación del archivo de imagen: nulo (no hay archivo), nombre del archivo (tipo de archivo válido), undefined (el formato de archivo no es válido y llama a la función deleteImage para eliminar el archivo)
+ */
 function validateImage(image):string{
     if(typeof image === 'undefined'){
         return 'null';
@@ -33,22 +40,30 @@ function validateImage(image):string{
             case 'image/gif':
                 return image.filename;
             default:
-                fs.stat(image.path, (err, exist) => {
-                    if(exist){
-                        fs.unlink(image.path,(err) => {
-                            if(err){
-                                console.log(err);
-                            }
-                        });
-                    } else {
-                        console.log(err);
-                    }
-                });
+                deleteImage(image);
                 return 'undefined';
         }
     }
 }
 
+/**
+ * Elimina un archivo de imagen
+ * 
+ * @param {any} image Recibe la imagen que será eliminada.
+ */
+function deleteImage(image){
+    fs.stat(image.path, (err, exist) => {
+        if(exist){
+            fs.unlink(image.path,(err) => {
+                if(err){
+                    console.log(err);
+                }
+            });
+        } else {
+            console.log(err);
+        }
+    });
+}
 /**
  * Registra el usuario en la base de datos
  *  
@@ -179,10 +194,11 @@ export function loginUser(req, res) {
  */
 export function userUpdate(req, res) {
     var userId = req.params.id;
-    var update = req.body;
+    console.log('Inicio userUpdate');
 
     // Busca en la BD por el id recuperado al hacer el login 
-    User.findByIdAndUpdate(userId, update, (err, userUpdate) => {
+    User.findByIdAndUpdate(userId, req, (err, userUpdate) => {
+        console.log('Entre al findByIdAndUpdate');
         if (err) {
             res.status(500).send({
                 message: 'Error al actualizar el usuario'
@@ -193,9 +209,14 @@ export function userUpdate(req, res) {
                     message: "No se ha podido actualizar el usuario"
                 });
             } else {
-                res.status(200).send({
-                    user: update
-                });
+                    userUpdate.image = validateImage(req.file);
+                    console.log(req.file);
+                    if(userUpdate.image == 'undefined'){
+                        res.status(500).send({message: 'Error de procesamiento. Formato de imagen no válido, no se ha podido actualizar el usuario'});
+                        return;
+                    } else {
+                        
+                        }
             }
         }
     });
