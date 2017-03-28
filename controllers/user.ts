@@ -51,13 +51,15 @@ function validateImage(image):string{
  * 
  * @param {any} image Recibe la imagen que será eliminada.
  */
-function deleteImage(image){
-    fs.stat(image.path, (err, exist) => {
+function deleteImage(image: String){
+
+    fs.stat('./uploads/users/' + image, (err, exist) => {
         if(exist){
-            fs.unlink(image.path,(err) => {
+            fs.unlink('./uploads/users/' + image,(err) => {
                 if(err){
                     console.log(err);
                 }
+                console.log('Archivo eliminado correctamente');
             });
         } else {
             console.log(err);
@@ -193,12 +195,44 @@ export function loginUser(req, res) {
  * @param {any} res Respuesta generada por el servicio
  */
 export function userUpdate(req, res) {
-    var userId = req.params.id;
-    console.log('Inicio userUpdate');
+    let userId = req.params.id;
+    let update = req.body;
+    let userImage: String;
 
+    // busca el usuario a actualizar y localiza el archivo del avatar
+    User.findById(userId, (err, user) =>{
+        if (err){
+            res.status(500).send({message: 'Error al procesar la solicitud'});
+            return;
+        } else {
+            if (!user){
+                res.status(404).send({message: 'Usuario no encontrado en la busqueda'});
+                return;
+            } else {
+                console.log("archivo de imagen a eliminar es: " + user.image);
+                userImage = user.image;
+                var imagenEliminar = userImage;
+            }
+        }
+    })
+    // valida la imagen nueva
+    var image = validateImage(req.file);
+    console.log('valor de variable image es : ' + image);
+    if (image == 'undefined') {
+        res.status(500).send({message: 'Error de procesamiento: El tipo de archivo para la imagen no es válido, use jpeg, png, gif'});
+    } else {
+        if (image == 'null') {
+            console.log('Actualizacion sin imagen');
+                console.log('imagen a eliminar :' + imagenEliminar);
+                update.image = userImage;
+            console.log('imagen a actualizar con image null : ' + update.image);
+        }else {
+            update.image = image;
+        }
+
+    }
     // Busca en la BD por el id recuperado al hacer el login 
-    User.findByIdAndUpdate(userId, req, (err, userUpdate) => {
-        console.log('Entre al findByIdAndUpdate');
+    User.findByIdAndUpdate(userId, update, (err, userUpdate) => {
         if (err) {
             res.status(500).send({
                 message: 'Error al actualizar el usuario'
@@ -209,14 +243,15 @@ export function userUpdate(req, res) {
                     message: "No se ha podido actualizar el usuario"
                 });
             } else {
-                    userUpdate.image = validateImage(req.file);
-                    console.log(req.file);
-                    if(userUpdate.image == 'undefined'){
-                        res.status(500).send({message: 'Error de procesamiento. Formato de imagen no válido, no se ha podido actualizar el usuario'});
-                        return;
-                    } else {
-                        
-                        }
+                if (update.image == 'null'){
+                    console.log('imagen vieja ' + userImage);
+                    update.image = userImage;
+                    console.log('imagen nueva ' + update.image);
+                    res.status(200).send({user: userUpdate});
+                }else{
+                    res.status(200).send({user: userUpdate});
+                    deleteImage(userImage);
+                }
             }
         }
     });
